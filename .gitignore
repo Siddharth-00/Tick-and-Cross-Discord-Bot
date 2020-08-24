@@ -2,4 +2,9 @@
 *.db
 JudgeBot/src/database.db
 *.db
+<<<<<<< Updated upstream
 JudgeBot/src/database.db
+=======
+JudgeBot/.DS_Store
+*.db
+>>>>>>> Stashed changes
