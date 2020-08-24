@@ -21,27 +21,19 @@ db.run('CREATE TABLE IF NOT EXISTS messages(messageID text, postID text, guildNa
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}`);
-    client.user.setActivity('developed by @root');
+    client.user.setActivity('developed by @DarthJarJar');
 });
 
-function queryMessage(message, name) {
-	const where = 'WHERE messageID ="${message.id}"" AND guildName ="${GuildName(message.guild.name)"';
-	var count = db.get(`SELECT 1 FROM messages WHERE messageID ="${message.id}" AND guildName ="${name}"`)
-	if(count[0]) {
-		db.run(`UPDATE messages SET score = score + 1 WHERE messageID ="${message.id}" AND guildName ="${name}"`)
-	}
-	else {
-		db.run(`INSERT INTO messages (messageID, postID, guildName, score) VALUES ("${message.id}","${message.id}","${name}", 1)`)
-	}
-	//db.run('IF EXISTS (SELECT * FROM messages ' + where + ') BEGIN (UPDATE messages SET score = score + 1 ' + where + ') END ELSE BEGIN (INSERT INTO messages (messageID, postID, guildName, score) VALUES (${message.id},hello,${GuildName(message.guild.name)}, 1)) END')
+function queryMessage(message, name, count) {
+	db.run(`REPLACE INTO messages (messageID, postID, guildName, score) VALUES ("${message.id}","${message.id}","${name}", "${count}")`)
 }
 
 client.on('messageReactionAdd', reaction => {
     if (reaction.emoji.name == '❌') {
         const guild = GuildName(reaction.message.guild.name);
         const message = reaction.message;
-        queryMessage(message, guild);
-        writePost(reaction, db.get(`SELECT score FROM messages WHERE messageID ="${reaction.message.id}" AND guildName ="${guild}"`));
+        queryMessage(message, guild, reaction.count);
+        writePost(reaction, reaction.count)
     }
 }); 
 
@@ -59,7 +51,7 @@ client.on('message', msg => {
 function getDate() {
 	var today = new Date();
 	var dd = String(today.getDate()).padStart(2, '0');
-	var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+	var mm = String(today.getMonth() + 1).padStart(2, '0'); 
 	var yyyy = today.getFullYear();
 	today = mm + '/' + dd + '/' + yyyy;
 	return today;
@@ -78,7 +70,7 @@ function writePost(reaction, count) {
         .setFooter(reaction.message.id + '•' + getDate())
         .setColor('#FF0000')
 	embed.addField("Source", "[Jump!](" + url + ")")
-    starboard.send(reaction.emoji + " **" + count[0] + "**" + " <#" + reaction.message.channel.id + ">", {embed});
+    starboard.send(reaction.emoji + " **" + count + "**" + " <#" + reaction.message.channel.id + ">", {embed});
 }
 
 client.login(token);
