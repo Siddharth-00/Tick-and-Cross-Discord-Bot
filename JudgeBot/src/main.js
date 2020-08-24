@@ -24,16 +24,17 @@ client.on('ready', () => {
     client.user.setActivity('developed by @DarthJarJar');
 });
 
-function queryMessage(message, name, count) {
-	db.run(`REPLACE INTO messages (messageID, postID, guildName, score) VALUES ("${message.id}","${message.id}","${name}", "${count}")`)
+function queryMessage(message, name, count, postID) {
+	db.run(`REPLACE INTO messages (messageID, postID, guildName, score) VALUES ("${message.id}","${postID}","${name}", "${count}")`)
 }
 
 client.on('messageReactionAdd', reaction => {
     if (reaction.emoji.name == '❌') {
         const guild = GuildName(reaction.message.guild.name);
         const message = reaction.message;
-        queryMessage(message, guild, reaction.count);
-        writePost(reaction, reaction.count)
+        var postID = writePost(reaction, reaction.count);
+        queryMessage(message, guild, reaction.count, postID);
+        
     }
 }); 
 
@@ -42,9 +43,6 @@ client.on('message', msg => {
     if (msg.channel.type === "dm") return; // Ignore DM channels.
     if(msg.content == 'ping') {
     	msg.channel.send('pong');
-    }
-    if (msg.content === '!add') {
-         addToDB(msg);
     }
 });
 
@@ -62,6 +60,7 @@ function GuildName(guild) {
 }
 
 function writePost(reaction, count) {
+    var postID = '';
     const starboard = reaction.message.guild.channels.find('name', 'hall-of-fame');
     var url = 'https://discord.com/channels/' + reaction.message.guild.id + '/' + reaction.message.channel.id + '/' + reaction.message.id;
     var embed = new Discord.RichEmbed()
@@ -69,8 +68,22 @@ function writePost(reaction, count) {
         .setDescription(reaction.message.content)
         .setFooter(reaction.message.id + '•' + getDate())
         .setColor('#FF0000')
-	embed.addField("Source", "[Jump!](" + url + ")")
-    starboard.send(reaction.emoji + " **" + count + "**" + " <#" + reaction.message.channel.id + ">", {embed});
+    embed.addField("Source", "[Jump!](" + url + ")")
+    var param = `SELECT postID FROM messages WHERE messageID="${reaction.message.id}"`
+    db.get(param, [], (err, row) => {
+      if (err) {
+        return console.error(err.message);
+      }
+      if(!row) {
+        starboard.send(reaction.emoji + " **" + count + "**" + " <#" + reaction.message.channel.id + ">", {embed}).then(post => postID = post.id);
+      }
+      else if(row) {
+        postID = row.postID;
+        starboard.fetchMessages({around: row.postID, limit: 1}).then(msg => msg.first().edit(reaction.emoji + " **" + count + "**" + " <#" + reaction.message.channel.id + ">", {embed})).catch(error => console.error("Error with message path"));
+      }
+    });
+    return postID;
+    
 }
 
 client.login(token);
