@@ -25,7 +25,12 @@ client.on('ready', () => {
 });
 
 function queryMessage(message, name, count, postID) {
-	db.run(`REPLACE INTO messages (messageID, postID, guildName, score) VALUES ("${message.id}","${postID}","${name}", "${count}")`)
+    if(count > 0) {
+        db.run(`REPLACE INTO messages (messageID, postID, guildName, score) VALUES ("${message.id}","${postID}","${name}", "${count}")`);
+    }
+    else {
+        db.run(`DELETE FROM messages WHERE messageID ="${message.id}"`)
+    }
 }
 
 client.on('messageReactionAdd', reaction => {
@@ -37,6 +42,15 @@ client.on('messageReactionAdd', reaction => {
         
     }
 }); 
+
+client.on('messageReactionRemove', reaction => {
+    if (reaction.emoji.name == '❌') {
+        const guild = GuildName(reaction.message.guild.name);
+        const message = reaction.message;
+        var postID = writePost(reaction, reaction.count);
+        queryMessage(message, guild, reaction.count, postID);
+    }
+});
 
 client.on('message', msg => {
     if (msg.author.bot) return; // Ignore bots.
@@ -79,11 +93,18 @@ function writePost(reaction, count) {
       }
       else if(row) {
         postID = row.postID;
+        if(count <= 0) {
+            starboard.fetchMessages({around: row.postID, limit: 1}).then(msg => msg.first().delete()).catch(error => console.error("Error with message path"));
+        }
+        else {
         starboard.fetchMessages({around: row.postID, limit: 1}).then(msg => msg.first().edit(reaction.emoji + " **" + count + "**" + " <#" + reaction.message.channel.id + ">", {embed})).catch(error => console.error("Error with message path"));
+        }
       }
     });
     return postID;
     
 }
+
+
 
 client.login(token);
