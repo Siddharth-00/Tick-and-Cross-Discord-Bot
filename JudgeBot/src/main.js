@@ -45,7 +45,9 @@ client.on('messageReactionAdd', (reaction, user) => {
         const guild = GuildName(reaction.message.guild.name);
         const message = reaction.message;
         var postID = writePost(reaction, reaction.count);
-        queryMessage(message, guild, reaction.count, postID);
+        if(reaction.count >= 3) {
+            queryMessage(message, guild, reaction.count, postID);
+        }
         if(user == reaction.message.author) {
             var param = `SELECT * FROM crossLeaderboard WHERE userID="${user.id}"`
             db.get(param, [], (err, row) => {
@@ -168,6 +170,12 @@ client.on('message', msg => {
     if(msg.content == '!antiboard') {
     	getRanksReceived(getRanksGiven, 'crossLeaderboard', msg);
     }
+    if(msg.content == '!f' && msg.member.hasPermission('KICK_MEMBERS')) {
+        msg.channel.send('Fuck Off');
+    }
+    if(msg.content == '!lightmode') {
+        msg.channel.send('No.')
+    }
 });
 
 function getDate() {
@@ -274,9 +282,9 @@ function writePost(reaction, count) {
       }
       else if(row) {
         postID = row.postID;
-        console.log(count);
         if(count < 3) {
             starboard.fetchMessages({around: row.postID, limit: 1}).then(msg => msg.first().delete()).catch(error => console.error("Error with message path"));
+            db.run(`DELETE FROM messages WHERE messageID="${reaction.message.id}"`)
         }
         else {
         starboard.fetchMessages({around: row.postID, limit: 1}).then(msg => msg.first().edit(reaction.emoji + " **" + count + "**" + " <#" + reaction.message.channel.id + ">", {embed})).catch(error => console.error("Error with message path"));
