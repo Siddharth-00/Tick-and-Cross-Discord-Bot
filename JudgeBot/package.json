@@ -1,16 +1,31 @@
 {
-  "name": "hall-of-fame-bot",
-  "version": "1.0.0",
-  "description": "A Discord Bot that displays the most up-voted messages",
-  "main": "index.js",
+  "//1": "describes your app and its dependencies",
+  "//2": "https://docs.npmjs.com/files/package.json",
+  "//3": "updating this file will download and update your packages",
+  "name": "hello-express",
+  "version": "0.0.1",
+  "description": "A simple Node app built on Express, instantly up and running.",
+  "main": "server.js",
   "scripts": {
-    "bot": "node src/main.js"
+    "start": "node server.js"
   },
-  "author": "Hayden Meloche",
-  "license": "ISC",
   "dependencies": {
+    "express": "^4.17.1",
     "discord.js": "^11.6.4",
-    "sqlite": "^2.9.3",
-    "sqlite3": "^5.0.0"
-  }
+    "sqlite3": "^5.0.0",
+    "random": "^2.2.0"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ss12345/Tick-and-Cross-Discord-Bot"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "glitch",
+    "express"
+  ]
 }
