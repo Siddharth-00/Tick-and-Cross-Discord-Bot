@@ -8,18 +8,6 @@ const random = require("random");
 const fs = require("fs");
 let token = process.env.TOKEN;
 
-const http = require('http');
-const express = require('express');
-const app = express();
-app.get("/", (request, response) => {
-  console.log(Date.now() + " Ping Received");
-  response.sendStatus(200);
-});
-app.listen(process.env.PORT);
-setInterval(() => {
-  http.get(`http://${process.env.PROJECT_DOMAIN}.glitch.me/`);
-}, 280000);
-
 //Opens up database
 const sql = require("sqlite3").verbose();
 let db = new sql.Database("./database.db", err => {
