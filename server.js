@@ -230,7 +230,7 @@ client.on("message", msg => {
     msg.channel.send("Have fun learning in a posh basement!");
   }
   if (msg.content == "!birmingham") {
-    msg.channel.send("Have fun in local lockdown");
+    msg.channel.send("mquay: idk");
   }
   if (msg.content == "!cambridge") {
     msg.channel.send("Ever made a compiler?");
