@@ -1,29 +1,31 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
+require("dotenv").config();
 
 const random = require("random");
 
 //JSON Loads discord bot key
 //JSON has 1 value in it. "key" : "yourkey"
-const fs = require("fs");
 let token = process.env.TOKEN;
 
 //Opens up database
-const sql = require("sqlite3").verbose();
-let db = new sql.Database("./database.db", err => {
-  if (err) {
-    return console.error(err.message);
-  }
-  console.log("Connected to the database file");
-});
 
-db.run(
+const pgp = require("pg-promise")();
+const db = pgp({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
+console.log("Connected to database");
+
+db.none(
   `CREATE TABLE IF NOT EXISTS messages(messageID text primary key, postID text, guildName text, score integer)`
 );
-db.run(
+db.none(
   `CREATE TABLE IF NOT EXISTS tickLeaderboard(userID text primary key, given integer, received integer)`
 );
-db.run(
+db.none(
   `CREATE TABLE IF NOT EXISTS crossLeaderboard(userID text primary key, given integer, received integer)`
 );
 
@@ -34,20 +36,26 @@ client.on("ready", () => {
 
 function queryMessage(message, name, count, postID) {
   if (count > 0) {
-    db.run(
-      `REPLACE INTO messages (messageID, postID, guildName, score) VALUES ("${message.id}","${postID}","${name}", "${count}")`
+    db.none(
+      `INSERT INTO ` +
+        `messages` +
+        ` (messageID, postID, guildName, score) VALUES ('${message.id}','${postID}','${name}', ${count}) ` +
+        `ON CONFLICT (messageID) DO UPDATE ` +
+        `SET (postID, guildName, score) = ('${postID}','${name}', ${count})`
     );
   } else {
-    db.run(`DELETE FROM messages WHERE messageID ="${message.id}"`);
+    db.none(`DELETE FROM messages WHERE messageID ='${message.id}'`);
   }
 }
 
 function addToLeaderboard(userID, dbName, given, x) {
   const param =
-    `REPLACE INTO ` +
+    `INSERT INTO ` +
     dbName +
-    ` (userID, given, received) VALUES ("${userID}", "${given}", "${x}")`;
-  db.run(param);
+    ` (userID, given, received) VALUES ('${userID}', ${given}, ${x}) ` +
+    `ON CONFLICT (userID) DO UPDATE ` +
+    `SET (given, received) = (${given}, ${x})`;
+  db.none(param);
 }
 
 client.on("messageReactionAdd", (reaction, user) => {
@@ -59,34 +67,35 @@ client.on("messageReactionAdd", (reaction, user) => {
       queryMessage(message, guild, reaction.count, postID);
     }
     if (user == reaction.message.author) {
-      var param = `SELECT * FROM crossLeaderboard WHERE userID="${user.id}"`;
-      db.get(param, [], (err, row) => {
+      var param = `SELECT * FROM crossLeaderboard WHERE userID='${user.id}'`;
+
+      db.oneOrNone(param, [], (row, err) => {
         if (err) {
-          return console.error(err.message);
+          console.error(err);
         }
         if (row) {
           addToLeaderboard(
             user.id,
             "crossLeaderboard",
-            row.given + 1,
-            row.received + 1
+            row["given"] + 1,
+            row["received"] + 1
           );
-        } else if (!row) {
+        } else {
           addToLeaderboard(user.id, "crossLeaderboard", 1, 1);
         }
       });
     } else {
-      var param = `SELECT * FROM crossLeaderboard WHERE userID="${reaction.message.author.id}"`;
-      db.get(param, [], (err, row) => {
+      var param = `SELECT * FROM crossLeaderboard WHERE userID='${reaction.message.author.id}'`;
+      db.oneOrNone(param, [], (row, err) => {
         if (err) {
-          return console.error(err.message);
+          console.error(err);
         }
         if (row) {
           addToLeaderboard(
             reaction.message.author.id,
             "crossLeaderboard",
-            row.given,
-            row.received + 1
+            row["given"],
+            row["received"] + 1
           );
         } else if (!row) {
           addToLeaderboard(
@@ -97,8 +106,8 @@ client.on("messageReactionAdd", (reaction, user) => {
           );
         }
       });
-      param = `SELECT * FROM crossLeaderboard WHERE userID="${user.id}"`;
-      db.get(param, [], (err, row) => {
+      param = `SELECT * FROM crossLeaderboard WHERE userID='${user.id}'`;
+      db.oneOrNone(param, [], (row, err) => {
         if (err) {
           return console.error(err.message);
         }
@@ -106,8 +115,8 @@ client.on("messageReactionAdd", (reaction, user) => {
           addToLeaderboard(
             user.id,
             "crossLeaderboard",
-            row.given + 1,
-            row.received
+            row["given"] + 1,
+            row["received"]
           );
         } else if (!row) {
           addToLeaderboard(user.id, "crossLeaderboard", 1, 0);
@@ -122,8 +131,8 @@ client.on("messageReactionAdd", (reaction, user) => {
         var postID = writePost(reaction, reaction.count);
         queryMessage(message, guild, reaction.count, postID);
         if(user == reaction.message.author) {
-            var param = `SELECT * FROM tickLeaderboard WHERE userID="${user.id}"`
-            db.get(param, [], (err, row) => {
+            var param = `SELECT * FROM tickLeaderboard WHERE userID='${user.id}'`
+            db.query(param, [], (err, row) => {
                 if (err) {
                     return console.error(err.message);
                 }
@@ -136,8 +145,8 @@ client.on("messageReactionAdd", (reaction, user) => {
             });
         }
         else {
-            var param = `SELECT * FROM tickLeaderboard WHERE userID="${reaction.message.author.id}"`
-            db.get(param, [], (err, row) => {
+            var param = `SELECT * FROM tickLeaderboard WHERE userID='${reaction.message.author.id}'`
+            db.query(param, [], (err, row) => {
                 if (err) {
                     return console.error(err.message);
                 }
@@ -148,8 +157,8 @@ client.on("messageReactionAdd", (reaction, user) => {
                     addToLeaderboard(reaction.message.author.id, 'tickLeaderboard', 0, 1)
                 }
             });
-            param = `SELECT * FROM tickLeaderboard WHERE userID="${user.id}"`
-            db.get(param, [], (err, row) => {
+            param = `SELECT * FROM tickLeaderboard WHERE userID='${user.id}'`
+            db.query(param, [], (err, row) => {
                 if (err) {
                     return console.error(err.message);
                 }
@@ -170,11 +179,11 @@ client.on("messageReactionRemove", (reaction, user) => {
     const message = reaction.message;
     var postID = writePost(reaction, reaction.count);
     queryMessage(message, guild, reaction.count, postID);
-    db.run(
-      `UPDATE crossLeaderboard SET received = received - 1 WHERE userID = "${reaction.message.author.id}"`
+    db.none(
+      `UPDATE crossLeaderboard SET received = received - 1 WHERE userID = '${reaction.message.author.id}'`
     );
-    db.run(
-      `UPDATE crossLeaderboard SET given = given - 1 WHERE userID = "${user.id}"`
+    db.none(
+      `UPDATE crossLeaderboard SET given = given - 1 WHERE userID = '${user.id}'`
     );
   }
   if (reaction.emoji.name == "✅") {
@@ -182,16 +191,16 @@ client.on("messageReactionRemove", (reaction, user) => {
     const message = reaction.message;
     var postID = writePost(reaction, reaction.count);
     queryMessage(message, guild, reaction.count, postID);
-    db.run(
-      `UPDATE tickLeaderboard SET received = received - 1 WHERE userID = "${reaction.message.author.id}"`
+    db.none(
+      `UPDATE tickLeaderboard SET received = received - 1 WHERE userID = '${reaction.message.author.id}'`
     );
-    db.run(
-      `UPDATE tickLeaderboard SET given = given - 1 WHERE userID = "${user.id}"`
+    db.none(
+      `UPDATE tickLeaderboard SET given = given - 1 WHERE userID = '${user.id}'`
     );
   }
 });
 
-client.on("message", msg => {
+client.on("message", (msg) => {
   if (msg.author.bot) return; // Ignore bots.
   if (msg.channel.type === "dm") return; // Ignore DM channels.
   if (msg.content == "ping") {
@@ -224,7 +233,9 @@ client.on("message", msg => {
     msg.channel.send("Good luck with that student satisfaction");
   }
   if (msg.content == "!warwick") {
-    msg.channel.send("I can't diss WW without risking the wrath of half the server");
+    msg.channel.send(
+      "I can't diss WW without risking the wrath of half the server"
+    );
   }
   if (msg.content == "!oxford") {
     msg.channel.send("Have fun learning in a posh basement!");
@@ -238,48 +249,76 @@ client.on("message", msg => {
   if (msg.content == "!kings") {
     msg.channel.send("BTEC UCL. Wait are BTECs still a thing?");
   }
+  if (msg.content == "!bristol") {
+    msg.channel.send("Uni of Crossdressers or something");
+  }
   if (msg.content == "!rat") {
     msg.channel.send("Rat clan is a dead cult");
   }
-  if (msg.content.length > 5 && msg.content.substring(0,5).toLowerCase() == "pick " && msg.author.bot != true) {
-    if(msg.content.includes("@everyone") || msg.content.includes("@here") || checkRoleFromMessage(msg)) {
+  if (msg.content == "!sith") {
+    msg.channel.send("<a:sith_lord:755572923213021314>");
+  }
+  /*let msgTimestamp = [];
+  if (msg.content == "!order66") {
+    if (typeof msgTimestamp[0] !== "undefined") {
+      if (msgTimestamp[0] + 10000 < Date.now()) {
+        msg.channel.send(
+          "Did you ever hear the Tragedy of Darth Plagueis the wise? I thought not. It's not a story the Jedi would tell you. It's a Sith legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise he could use the Force to influence the midichlorians to create life... He had such a knowledge of the dark side that he could even keep the ones he cared about from dying. The dark side of the Force is a pathway to many abilities some consider to be unnatural. He became so powerful... the only thing he was afraid of was losing his power, which eventually, of course, he did. Unfortunately, he taught his apprentice everything he knew, then his apprentice killed him in his sleep. It's ironic he could save others from death, but not himself."
+        );
+        msgTimestamp = [];
+      } else {
+        message.channel.send("Wait some time before using this command again.");
+      }
+    } else {
+      msgTimestamp.push(Date.now());
+      msg.channel.send(
+        "Did you ever hear the Tragedy of Darth Plagueis the wise? I thought not. It's not a story the Jedi would tell you. It's a Sith legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise he could use the Force to influence the midichlorians to create life... He had such a knowledge of the dark side that he could even keep the ones he cared about from dying. The dark side of the Force is a pathway to many abilities some consider to be unnatural. He became so powerful... the only thing he was afraid of was losing his power, which eventually, of course, he did. Unfortunately, he taught his apprentice everything he knew, then his apprentice killed him in his sleep. It's ironic he could save others from death, but not himself."
+      );
+    }
+  }*/
+  if (
+    msg.content.length > 5 &&
+    msg.content.substring(0, 5).toLowerCase() == "pick " &&
+    msg.author.bot != true
+  ) {
+    if (
+      msg.content.includes("@everyone") ||
+      msg.content.includes("@here") ||
+      checkRoleFromMessage(msg)
+    ) {
       msg.channel.send(`Fuck you <@${msg.author.id}>`);
-    }
-    else if(msg.mentions.members.first()) {
+    } else if (msg.mentions.members.first()) {
       msg.channel.send("Double pings are just rude");
-    }
-    else {
-      var words = msg.content.substring(5,).split(",");
-      var index = random.int(0,words.length-1);
+    } else {
+      var words = msg.content.substring(5).split(",");
+      var index = random.int(0, words.length - 1);
       msg.channel.send(words[index]);
     }
   }
   if (msg.content == "!carl") {
     msg.channel.send("Kill the turtle");
   }
-  
 });
 
 function checkRoleFromMessage(message) {
-  if(!message.content.includes("<@&")) {
+  if (!message.content.includes("<@&")) {
     return false;
   }
-  
-  
-	// The id is the first and only match found by the RegEx.
-	const matches = message.content.match(/<@(&)!?(\d+)>/);
 
-	// If supplied variable was not a mention, matches will be null instead of an array.
-	if (!matches) return;
-  
-	// However the first element in the matches array will be the entire mention, not just the ID,
-	// so use index 1.
-	const id = matches[2];
-  let role = message.guild.roles.find(x => x.id === id);
+  // The id is the first and only match found by the RegEx.
+  const matches = message.content.match(/<@(&)!?(\d+)>/);
+
+  // If supplied variable was not a mention, matches will be null instead of an array.
+  if (!matches) return;
+
+  // However the first element in the matches array will be the entire mention, not just the ID,
+  // so use index 1.
+  const id = matches[2];
+  let role = message.guild.roles.find((x) => x.id === id);
   if (typeof role != undefined) {
-      return true;
+    return true;
   } else {
-      return false;
+    return false;
   }
 }
 
@@ -297,35 +336,35 @@ function GuildName(guild) {
 }
 
 function getRanksReceived(callback, board, message) {
-  var paramReceived = `SELECT * FROM "${board}" ORDER BY received DESC LIMIT 3`;
+  var paramReceived = `SELECT * FROM ${board} ORDER BY received DESC LIMIT 3`;
   var ranksReceived = [];
-  db.all(paramReceived, [], (err, rows) => {
-    if (err) {
-      console.error(err);
-    }
-    if (rows) {
-      rows.forEach(row => {
-        ranksReceived.push(`<@${row.userID}> (${row.received})`);
-      });
-      return callback(getEmbed, board, message, ranksReceived);
-    }
+  db.any(paramReceived).then((rows) => {
+    rows.forEach((row) => {
+      ranksReceived.push(`<@${row["userid"]}> (${row["received"]})`);
+    });
+    return callback(getEmbed, board, message, ranksReceived);
   });
 }
 
 function getRanksGiven(callback, board, message, ranks2) {
-  var param = `SELECT * FROM "${board}" ORDER BY given DESC LIMIT 3`;
+  var param = `SELECT * FROM ${board} ORDER BY given DESC LIMIT 3`;
   var ranks = [];
-  db.all(param, [], (err, rows) => {
-    if (err) {
-      console.error(err);
-    }
-    if (rows) {
-      rows.forEach(row => {
-        ranks.push(`<@${row.userID}> (${row.given})`);
-      });
-      return callback(board, ranks, message, ranks2);
-    }
+  db.any(param).then((rows) => {
+    rows.forEach((row) => {
+      ranks.push(`<@${row["userid"]}> (${row["given"]})`);
+    });
+    return callback(board, ranks, message, ranks2);
   });
+}
+
+function getRankFromMedal(rank) {
+  if (rank == 1) {
+    return ":first_place";
+  } else if (rank == 2) {
+    return ":second_place";
+  } else if (rank == 3) {
+    return ":third_place";
+  }
 }
 
 function getEmbed(board, ranks, message, ranks2) {
@@ -341,18 +380,47 @@ function getEmbed(board, ranks, message, ranks2) {
     color = "#008000";
   }
   for (i = 0; i < ranks.length; i++) {
-    out = out + `${i + 1}: ${ranks[i]} \n`;
+    out = out + `${getRankFromMedal(i + 1)}: ${ranks[i]} \n`;
   }
   for (i = 0; i < ranks2.length; i++) {
-    out2 = out2 + `${i + 1}: ${ranks2[i]} \n`;
+    out2 = out2 + `${getRankFromMedal(i + 1)}: ${ranks2[i]} \n`;
   }
-  var embed = new Discord.RichEmbed()
-    .setTitle("Server " + title + " Stats")
-    .setDescription("X messages marked with a total of X reacts")
-    .setColor(color);
-  embed.addField("Top Givers", out, true);
-  embed.addField("Top Receivers", out2, true);
-  message.channel.send({ embed });
+  db.oneOrNone(
+    `SELECT * FROM crossLeaderboard WHERE userID='${message.author.id}'`,
+    [],
+    (row, err) => {
+      if (err) {
+        console.error(err.message);
+      }
+      if (row) {
+        const line = `<@${row["userid"]}> (${row["given"]})`;
+        if (!ranks.includes(line)) {
+          out = out + `You: ${line} \n`;
+        }
+        const line2 = `<@${row["userid"]}> (${row["received"]})`;
+        if (!ranks2.includes(line2)) {
+          out2 = out2 + `You: ${line2} \n`;
+        }
+      } else {
+        const line = `<@${message.author.id}> (0)`;
+
+        if (!ranks.includes(line)) {
+          out = out + `You: ${line} \n`;
+        }
+        const line2 = `<@${message.author.id}> (0)`;
+        if (!ranks2.includes(line2)) {
+          out2 = out2 + `You: ${line2} \n`;
+        }
+      }
+      var embed = new Discord.RichEmbed()
+        .setTitle("Server " + title + " Stats")
+        .setDescription("X messages marked with a total of X reacts")
+        .setColor(color);
+      embed.addField("Top Givers", out, true);
+      embed.addField("Top Receivers", out2, true);
+      message.channel.send({ embed });
+    }
+  );
 }
 
 function writePost(reaction, count) {
@@ -363,6 +431,10 @@ function writePost(reaction, count) {
   }
   if (reaction.emoji.name == "❌") {
     starboard = reaction.message.guild.channels.find("name", "anti-star");
+  }
+  if (!starboard) {
+    console.log("Can't find board");
+    return;
   }
 
   var url =
@@ -381,10 +453,10 @@ function writePost(reaction, count) {
     .setFooter(reaction.message.id + "•" + getDate())
     .setColor("#FF0000");
   embed.addField("Source", "[Jump!](" + url + ")");
-  var param = `SELECT postID FROM messages WHERE messageID="${reaction.message.id}"`;
-  db.get(param, [], (err, row) => {
+  var param = `SELECT postID FROM messages WHERE messageID='${reaction.message.id}'`;
+  db.oneOrNone(param, [], (row, err) => {
     if (err) {
-      return console.error(err.message);
+      console.error(err.message);
     }
     if (!row) {
       if (count > 1) {
@@ -399,20 +471,22 @@ function writePost(reaction, count) {
               ">",
             { embed }
           )
-          .then(post => (postID = post.id));
+          .then((post) => (postID = post.id));
       }
     } else if (row) {
-      postID = row.postID;
+      postID = row["postid"];
       if (count < 2) {
         starboard
-          .fetchMessages({ around: row.postID, limit: 1 })
-          .then(msg => msg.first().delete())
-          .catch(error => console.error("Error with message path"));
-        db.run(`DELETE FROM messages WHERE messageID="${reaction.message.id}"`);
+          .fetchMessages({ around: row["postid"], limit: 1 })
+          .then((msg) => msg.first().delete())
+          .catch((error) => console.error("Error with message path"));
+        db.none(
+          `DELETE FROM messages WHERE messageID='${reaction.message.id}'`
+        );
       } else {
         starboard
-          .fetchMessages({ around: row.postID, limit: 1 })
-          .then(msg =>
+          .fetchMessages({ around: row["postid"], limit: 1 })
+          .then((msg) =>
             msg
               .first()
               .edit(
@@ -426,7 +500,7 @@ function writePost(reaction, count) {
                 { embed }
               )
           )
-          .catch(error => console.error("Error with message path"));
+          .catch((error) => console.error("Error with message path"));
       }
     }
   });
