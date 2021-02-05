@@ -258,13 +258,20 @@ client.on("message", (msg) => {
   if (msg.content == "!sith") {
     msg.channel.send("<a:sith_lord:755572923213021314>");
   }
-  if (msg.content == "!tomas") {
+  /*if (msg.content == "!tomas") {
     msg.channel.send("<@385840144273506307>");
     msg.channel.send("<@385840144273506307>");
     msg.channel.send("<@385840144273506307>");
     msg.channel.send("<@385840144273506307>");
     msg.channel.send("<@385840144273506307>");
   }
+  if (msg.content == "!nonce") {
+      msg.channel.send("<@385840144273506307>");
+      msg.channel.send("<@385840144273506307>");
+      msg.channel.send("<@385840144273506307>");
+      msg.channel.send("<@385840144273506307>");
+      msg.channel.send("<@385840144273506307>");
+    }*/
   /*let msgTimestamp = [];
   if (msg.content == "!order66") {
     if (typeof msgTimestamp[0] !== "undefined") {
