@@ -243,7 +243,7 @@ client.on("message", (msg) => {
     (msg.content.toLowerCase().includes("rhino") ||
       msg.content.includes("coochie"))
   ) {
-    let muterole = message.guild.roles.find(
+    let muterole = msg.guild.roles.find(
       (muterole) => muterole.name === "muted"
     );
     msg.member.addRole(muterole);
