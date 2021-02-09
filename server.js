@@ -242,7 +242,7 @@ client.on("message", (msg) => {
     msg.author.id === "385840144273506307" &&
     (msg.content.includes("rhino") || msg.content.includes("coochie"))
   ) {
-    msg.member.roles.add("742111372757958766");
+    msg.member.addRole("742111372757958766");
     msg.channel.send("Tomas muted");
   }
   if (msg.content == "ping") {
