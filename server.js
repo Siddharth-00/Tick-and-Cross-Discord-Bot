@@ -246,6 +246,7 @@ client.on("message", (msg) => {
     let muterole = msg.guild.roles.find(
       (muterole) => muterole.name === "muted"
     );
+    console.log(muterole);
     msg.member.addRole(muterole);
     msg.channel.send("Tomas muted");
   }
