@@ -20,21 +20,53 @@ const db = pgp({
 console.log("Connected to database");
 
 db.none(
-  `CREATE TABLE IF NOT EXISTS messages(messageID text primary key, postID text, guildName text, score integer)`
+  `CREATE TABLE IF NOT EXISTS messages
+     (
+         messageID
+         text
+         primary
+         key,
+         postID
+         text,
+         guildName
+         text,
+         score
+         integer
+     )`
 );
 db.none(
-  `CREATE TABLE IF NOT EXISTS tickLeaderboard(userID text primary key, given integer, received integer)`
+  `CREATE TABLE IF NOT EXISTS tickLeaderboard
+     (
+         userID
+         text
+         primary
+         key,
+         given
+         integer,
+         received
+         integer
+     )`
 );
 db.none(
-  `CREATE TABLE IF NOT EXISTS crossLeaderboard(userID text primary key, given integer, received integer)`
+  `CREATE TABLE IF NOT EXISTS crossLeaderboard
+     (
+         userID
+         text
+         primary
+         key,
+         given
+         integer,
+         received
+         integer
+     )`
 );
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}`);
   client.user.setActivity("developed by @DarthJarJar");
-  client.on('ready', client => {
-                client.channels.get('409382144838991893').send('Hello here!');
-            });
+  client.on("ready", (client) => {
+    client.channels.get("409382144838991893").send("Hello here!");
+  });
 });
 
 function queryMessage(message, name, count, postID) {
@@ -129,51 +161,51 @@ client.on("messageReactionAdd", (reaction, user) => {
   }
 
   /*if (reaction.emoji.name == '✅') {
-        const guild = GuildName(reaction.message.guild.name);
-        const message = reaction.message;
-        var postID = writePost(reaction, reaction.count);
-        queryMessage(message, guild, reaction.count, postID);
-        if(user == reaction.message.author) {
-            var param = `SELECT * FROM tickLeaderboard WHERE userID='${user.id}'`
-            db.query(param, [], (err, row) => {
-                if (err) {
-                    return console.error(err.message);
-                }
-                if(row) {
-                    addToLeaderboard(user.id, 'tickLeaderboard', row.given + 1, row.received + 1);
-                }
-                else if(!row) {
-                    addToLeaderboard(user.id, 'tickLeaderboard', 1, 1);
-                }
-            });
-        }
-        else {
-            var param = `SELECT * FROM tickLeaderboard WHERE userID='${reaction.message.author.id}'`
-            db.query(param, [], (err, row) => {
-                if (err) {
-                    return console.error(err.message);
-                }
-                if(row) {
-                    addToLeaderboard(reaction.message.author.id, 'tickLeaderboard', row.given, row.received + 1)
-                }
-                else if(!row) {
-                    addToLeaderboard(reaction.message.author.id, 'tickLeaderboard', 0, 1)
-                }
-            });
-            param = `SELECT * FROM tickLeaderboard WHERE userID='${user.id}'`
-            db.query(param, [], (err, row) => {
-                if (err) {
-                    return console.error(err.message);
-                }
-                if(row) {
-                    addToLeaderboard(user.id, 'tickLeaderboard', row.given + 1, row.received);
-                }
-                else if(!row) {
-                    addToLeaderboard(user.id, 'tickLeaderboard', 1, 0);
-                }
-            });
-        }
-    }*/
+          const guild = GuildName(reaction.message.guild.name);
+          const message = reaction.message;
+          var postID = writePost(reaction, reaction.count);
+          queryMessage(message, guild, reaction.count, postID);
+          if(user == reaction.message.author) {
+              var param = `SELECT * FROM tickLeaderboard WHERE userID='${user.id}'`
+              db.query(param, [], (err, row) => {
+                  if (err) {
+                      return console.error(err.message);
+                  }
+                  if(row) {
+                      addToLeaderboard(user.id, 'tickLeaderboard', row.given + 1, row.received + 1);
+                  }
+                  else if(!row) {
+                      addToLeaderboard(user.id, 'tickLeaderboard', 1, 1);
+                  }
+              });
+          }
+          else {
+              var param = `SELECT * FROM tickLeaderboard WHERE userID='${reaction.message.author.id}'`
+              db.query(param, [], (err, row) => {
+                  if (err) {
+                      return console.error(err.message);
+                  }
+                  if(row) {
+                      addToLeaderboard(reaction.message.author.id, 'tickLeaderboard', row.given, row.received + 1)
+                  }
+                  else if(!row) {
+                      addToLeaderboard(reaction.message.author.id, 'tickLeaderboard', 0, 1)
+                  }
+              });
+              param = `SELECT * FROM tickLeaderboard WHERE userID='${user.id}'`
+              db.query(param, [], (err, row) => {
+                  if (err) {
+                      return console.error(err.message);
+                  }
+                  if(row) {
+                      addToLeaderboard(user.id, 'tickLeaderboard', row.given + 1, row.received);
+                  }
+                  else if(!row) {
+                      addToLeaderboard(user.id, 'tickLeaderboard', 1, 0);
+                  }
+              });
+          }
+      }*/
 });
 
 client.on("messageReactionRemove", (reaction, user) => {
@@ -206,9 +238,12 @@ client.on("messageReactionRemove", (reaction, user) => {
 client.on("message", (msg) => {
   if (msg.author.bot) return; // Ignore bots.
   if (msg.channel.type === "dm") return; // Ignore DM channels.
-  if (msg.author.id === '385840144273506307' && ((msg.content.contains('rhino') || msg.content.contains('coochie')))) {
-      msg.member.roles.add('742111372757958766');
-      msg.channel.send('Tomas muted')
+  if (
+    msg.author.id === "385840144273506307" &&
+    (msg.content.includes("rhino") || msg.content.includes("coochie"))
+  ) {
+    msg.member.roles.add("742111372757958766");
+    msg.channel.send("Tomas muted");
   }
   if (msg.content == "ping") {
     msg.channel.send("pong");
@@ -269,26 +304,26 @@ client.on("message", (msg) => {
     msg.channel.send("<@385840144273506307>");
   }
   if (msg.content == "!nonce" && msg.member.hasPermission("KICK_MEMBERS")) {
-      msg.channel.send("<@&804494324204568607>");
-    }
+    msg.channel.send("<@&804494324204568607>");
+  }
   /*let msgTimestamp = [];
-  if (msg.content == "!order66") {
-    if (typeof msgTimestamp[0] !== "undefined") {
-      if (msgTimestamp[0] + 10000 < Date.now()) {
+    if (msg.content == "!order66") {
+      if (typeof msgTimestamp[0] !== "undefined") {
+        if (msgTimestamp[0] + 10000 < Date.now()) {
+          msg.channel.send(
+            "Did you ever hear the Tragedy of Darth Plagueis the wise? I thought not. It's not a story the Jedi would tell you. It's a Sith legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise he could use the Force to influence the midichlorians to create life... He had such a knowledge of the dark side that he could even keep the ones he cared about from dying. The dark side of the Force is a pathway to many abilities some consider to be unnatural. He became so powerful... the only thing he was afraid of was losing his power, which eventually, of course, he did. Unfortunately, he taught his apprentice everything he knew, then his apprentice killed him in his sleep. It's ironic he could save others from death, but not himself."
+          );
+          msgTimestamp = [];
+        } else {
+          message.channel.send("Wait some time before using this command again.");
+        }
+      } else {
+        msgTimestamp.push(Date.now());
         msg.channel.send(
           "Did you ever hear the Tragedy of Darth Plagueis the wise? I thought not. It's not a story the Jedi would tell you. It's a Sith legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise he could use the Force to influence the midichlorians to create life... He had such a knowledge of the dark side that he could even keep the ones he cared about from dying. The dark side of the Force is a pathway to many abilities some consider to be unnatural. He became so powerful... the only thing he was afraid of was losing his power, which eventually, of course, he did. Unfortunately, he taught his apprentice everything he knew, then his apprentice killed him in his sleep. It's ironic he could save others from death, but not himself."
         );
-        msgTimestamp = [];
-      } else {
-        message.channel.send("Wait some time before using this command again.");
       }
-    } else {
-      msgTimestamp.push(Date.now());
-      msg.channel.send(
-        "Did you ever hear the Tragedy of Darth Plagueis the wise? I thought not. It's not a story the Jedi would tell you. It's a Sith legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise he could use the Force to influence the midichlorians to create life... He had such a knowledge of the dark side that he could even keep the ones he cared about from dying. The dark side of the Force is a pathway to many abilities some consider to be unnatural. He became so powerful... the only thing he was afraid of was losing his power, which eventually, of course, he did. Unfortunately, he taught his apprentice everything he knew, then his apprentice killed him in his sleep. It's ironic he could save others from death, but not himself."
-      );
-    }
-  }*/
+    }*/
   if (
     msg.content.length > 5 &&
     msg.content.substring(0, 5).toLowerCase() == "pick " &&
@@ -521,4 +556,3 @@ function writePost(reaction, count) {
 }
 
 client.login(token);
-
