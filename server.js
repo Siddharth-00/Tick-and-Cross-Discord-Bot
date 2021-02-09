@@ -243,10 +243,20 @@ client.on("message", (msg) => {
     (msg.content.toLowerCase().includes("rhino") ||
       msg.content.includes("coochie"))
   ) {
-    let muterole = msg.guild.roles.find(
-      (muterole) => muterole.name === "muted"
-    );
-    console.log(muterole);
+      msg.member
+          .kick('Tomas')
+          .then(() => {
+              // We let the message author know we were able to kick the person
+              msg.channel.send(`Successfully kicked ${user.tag}`);
+          })
+          .catch(err => {
+              // An error happened
+              // This is generally due to the bot not being able to kick the member,
+              // either due to missing permissions or role hierarchy
+              msg.channel.send('I was unable to kick the member');
+              // Log the error
+              console.error(err);
+          });
     msg.member.addRole('808829531976761375');
     msg.channel.send("Tomas muted");
   }
