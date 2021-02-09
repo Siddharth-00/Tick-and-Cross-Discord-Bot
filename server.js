@@ -239,7 +239,7 @@ client.on("message", (msg) => {
   if (msg.author.bot) return; // Ignore bots.
   if (msg.channel.type === "dm") return; // Ignore DM channels.
   if (
-    msg.author.id === "399658320996073492" &&
+    msg.author.id === "385840144273506307" &&
     (msg.content.toLowerCase().includes("rhino") ||
       msg.content.includes("coochie"))
   ) {
@@ -247,7 +247,7 @@ client.on("message", (msg) => {
       (muterole) => muterole.name === "muted"
     );
     console.log(muterole);
-    msg.member.addRole('808829531976761375');
+    msg.member.addRole('742111372757958766');
     msg.channel.send("Tomas muted");
   }
   if (msg.content == "ping") {
