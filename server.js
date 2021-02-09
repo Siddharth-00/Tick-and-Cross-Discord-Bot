@@ -241,13 +241,14 @@ client.on("message", (msg) => {
   if (
     msg.author.id === "385840144273506307" &&
     (msg.content.toLowerCase().includes("rhino") ||
-      msg.content.includes("coochie") || msg.content.includes("ewwww-lol.gif") || msg.content.includes("ace-ventura"))
+      msg.content.includes("coochie") ||
+      msg.content.includes("ewwww-lol.gif") ||
+      msg.content.includes("ace-ventura"))
   ) {
     let muterole = msg.guild.roles.find(
       (muterole) => muterole.name === "muted"
     );
-    console.log(muterole);
-    msg.member.addRole('742111372757958766');
+    msg.member.addRole(muterole);
     msg.channel.send("Tomas muted");
   }
   if (msg.content == "ping") {
