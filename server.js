@@ -250,6 +250,7 @@ client.on("message", (msg) => {
     );
     msg.member.addRole(muterole);
     msg.channel.send("Tomas muted");
+    msg.delete();
   }
   if (msg.content == "ping") {
     msg.channel.send("pong");
