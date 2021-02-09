@@ -241,7 +241,7 @@ client.on("message", (msg) => {
   if (
     msg.author.id === "385840144273506307" &&
     (msg.content.toLowerCase().includes("rhino") ||
-      msg.content.includes("coochie") || msg.content.includes("ewwww-lol.gif"))
+      msg.content.includes("coochie") || msg.content.includes("ewwww-lol.gif") || msg.content.includes("ace-ventura"))
   ) {
     let muterole = msg.guild.roles.find(
       (muterole) => muterole.name === "muted"
