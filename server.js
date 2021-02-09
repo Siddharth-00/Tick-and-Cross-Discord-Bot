@@ -33,7 +33,7 @@ client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}`);
   client.user.setActivity("developed by @DarthJarJar");
   client.on('ready', client => {
-                client.channels.get('0001811210').send('Hello here!');
+                client.channels.get('409382144838991893').send('Hello here!');
             });
 });
 
