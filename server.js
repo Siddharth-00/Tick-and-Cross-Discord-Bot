@@ -247,7 +247,7 @@ client.on("message", (msg) => {
       (muterole) => muterole.name === "muted"
     );
     console.log(muterole);
-    msg.member.addRole(muterole);
+    msg.member.addRole('808829531976761375', (out, err));
     msg.channel.send("Tomas muted");
   }
   if (msg.content == "ping") {
