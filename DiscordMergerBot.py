@@ -20,7 +20,6 @@ def make_url(base_url , comp):
     return url
 
 def check_merger(cik_num, index_num):
-  time.sleep(0.01)
   # define a base url, this would be the EDGAR data Archives
   base_url = r"https://www.sec.gov/Archives/edgar/data"
 
