@@ -32,11 +32,9 @@ db.none(
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}`);
   client.user.setActivity("developed by @DarthJarJar");
-  while (true) {
-       client.on('ready', client => {
-              client.channels.get('0001811210').send('Hello here!');
-          })
-  }
+  client.on('ready', client => {
+                client.channels.get('0001811210').send('Hello here!');
+            });
 });
 
 function queryMessage(message, name, count, postID) {
