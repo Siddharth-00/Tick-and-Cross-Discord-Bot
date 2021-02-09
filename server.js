@@ -206,7 +206,7 @@ client.on("messageReactionRemove", (reaction, user) => {
 client.on("message", (msg) => {
   if (msg.author.bot) return; // Ignore bots.
   if (msg.channel.type === "dm") return; // Ignore DM channels.
-  if (msg.author.id === '385840144273506307' && ((msg.content.contains('rhino') || msg.content.contains('coochie')) {
+  if (msg.author.id === '385840144273506307' && ((msg.content.contains('rhino') || msg.content.contains('coochie')))) {
       msg.member.roles.add('742111372757958766');
       msg.channel.send('Tomas muted')
   }
