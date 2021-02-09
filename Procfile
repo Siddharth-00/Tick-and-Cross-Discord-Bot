@@ -1,1 +1,2 @@
-worker: node server.js & pip3 install discord & pip3 & python3 DiscordMergerBot.py heroku ps:scale worker=1 -app Discord_Bot
+worker: node server.js
+heroku ps:scale worker=1 -app Discord_Bot
