@@ -515,5 +515,7 @@ function writePost(reaction, count) {
 
 client.login(token);
 while (true) {
-    client.channels.cache.get(`0001811210`).send(`Text`);
+     client.on('ready', client => {
+            client.channels.get('0001811210').send('Hello here!');
+        })
 }
