@@ -257,7 +257,8 @@ client.on("message", (msg) => {
   }
   if (
     msg.content.toLowerCase() == "hello there" ||
-    msg.content.toLowerCase() == "hello there!"
+    msg.content.toLowerCase() == "hello there!" ||
+    (msg.content.includes("hello") && msg.content.includes("there") && msg.content.includes(".gif"))
   ) {
     msg.channel.send(
       "https://media1.tenor.com/images/e60c1321d5acb1ff986d2dbb1560343e/tenor.gif?itemid=13024141"

@@ -19,6 +19,27 @@ def make_url(base_url , comp):
         
     return url
 
+def check_document(base_url, cik_num, filing_num, document):
+    document_name = document['name']
+    filing_url = make_url(base_url, [cik_num, filing_num, document_name])
+    if(filing_url.endswith('.txt')):
+        content = requests.get(filing_url)
+        print(content.text.split('\n')[4])
+        return content.text.split('\n')[4].endswith('425')
+    return False
+    
+def check_filing(base_url, cik_num, filing_number):
+    filing_num = filing_number['name']
+    # define the filing url, again I want all the data back as JSON.
+    filing_url = make_url(base_url, [cik_num, filing_num, 'index.json'])
+
+    # Get the documents submitted for that filing.
+    content = requests.get(filing_url)
+    document_content = content.json()
+    # get a document name
+    return any(check_document(base_url, cik_num, filing_num, document) for document in document_content['directory']['item'])      
+    
+    
 def check_merger(cik_num, index_num):
   # define a base url, this would be the EDGAR data Archives
   base_url = r"https://www.sec.gov/Archives/edgar/data"
@@ -31,27 +52,7 @@ def check_merger(cik_num, index_num):
   # Get the filings and then decode it into a dictionary object.
   content = requests.get(filings_url)
   decoded_content = content.json()
-  for i in range(index_num):
-    filing_number = decoded_content['directory']['item'][i]
-    filing_num = filing_number['name']
-    # define the filing url, again I want all the data back as JSON.
-    filing_url = make_url(base_url, [cik_num, filing_num, 'index.json'])
-
-    # Get the documents submitted for that filing.
-    content = requests.get(filing_url)
-    document_content = content.json()
-    # get a document name
-    for document in document_content['directory']['item']:
-        document_name = document['name']
-        filing_url = make_url(base_url, [cik_num, filing_num, document_name])
-        if('.txt' in filing_url):
-          content = requests.get(filing_url)
-          for ln in content.text.split('\n'):
-            if('CONFORMED SUBMISSION TYPE' in ln):
-              if ('425' in ln):
-                return True
-              break
-  return False
+  return any(check_filing(base_url, cik_num, filing_number) for filing_number in decoded_content['directory']['item'][0:index_num])
 
 tickers = {}
 with open('SPACSCIK.txt', 'r+') as f:
@@ -69,7 +70,7 @@ async def background_task():
         keys = list(tickers.keys())
         for i in range(size):
             key = keys[i]
-            if (check_merger(tickers[key], 2)):
+            if (check_merger(tickers[key], 3)):
                 await channel.send(f"@everyone {key}: MERGED")
                 del tickers[key]
             else:
