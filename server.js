@@ -240,7 +240,7 @@ client.on("message", (msg) => {
   if (msg.channel.type === "dm") return; // Ignore DM channels.
   if (
     msg.author.id === "385840144273506307" &&
-    (msg.content.toLowerCase()..normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes("rhino") ||
+    (msg.content.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes("rhino") ||
       msg.content.includes("coochie") ||
       msg.content.includes("ewwww-lol.gif") ||
       msg.content.includes("ace-ventura"))
