@@ -240,7 +240,7 @@ client.on("message", (msg) => {
   if (msg.channel.type === "dm") return; // Ignore DM channels.
   if (
     msg.author.id === "385840144273506307" &&
-    (msg.content.toLowerCase().includes("rhino") ||
+    (msg.content.toLowerCase()..normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes("rhino") ||
       msg.content.includes("coochie") ||
       msg.content.includes("ewwww-lol.gif") ||
       msg.content.includes("ace-ventura"))
@@ -250,6 +250,14 @@ client.on("message", (msg) => {
     );
     msg.member.addRole(muterole);
     msg.channel.send("Tomas muted");
+    msg.delete();
+  }
+  if (msg.content.includes("ewwww-lol.gif")) {
+    let muterole = msg.guild.roles.find(
+      (muterole) => muterole.name === "muted"
+    );
+    msg.member.addRole(muterole);
+    msg.channel.send("Muted for Rhino gif");
     msg.delete();
   }
   if (msg.content == "ping") {
