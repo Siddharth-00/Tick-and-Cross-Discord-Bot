@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-var Spotify = require('resources/spotify-web-api-js');
+var Spotify = require('spotify-web-api-js');
 const client = new Discord.Client();
 require("dotenv").config();
 
