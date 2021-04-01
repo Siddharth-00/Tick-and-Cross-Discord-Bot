@@ -325,6 +325,9 @@ client.on("message", (msg) => {
   if (msg.content == "!nonce" && msg.member.hasPermission("KICK_MEMBERS")) {
     msg.channel.send("<@&804494324204568607>");
   }
+  if (msg.content.startsWith("!searchSpotify ")) {
+    searchSpotify(msg.content.substring(15));
+  }
   /*let msgTimestamp = [];
     if (msg.content == "!order66") {
       if (typeof msgTimestamp[0] !== "undefined") {
