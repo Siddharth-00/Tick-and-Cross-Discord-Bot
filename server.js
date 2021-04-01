@@ -9,6 +9,7 @@ const fetch = require('node-fetch');
 //JSON Loads discord bot key
 //JSON has 1 value in it. "key" : "yourkey"
 let token = process.env.TOKEN;
+let musictoken = process.env.MUSIC
 
 //Opens up database
 
@@ -578,7 +579,7 @@ function writePost(reaction, count) {
 }
 
 function searchMusic(search) {
-  fetch('http://api.musixmatch.com/ws/1.1/track.search?apikey=c523da3df5ff27726fe4c5d79b99bca3&q_artist=justin%20bieber&page_size=3&page=1&s_track_rating=desc')
+  fetch(`http://api.musixmatch.com/ws/1.1/track.search?apikey=${musictoken}&q_lyrics=${search}&page_size=1&page=1&s_track_rating=desc`)
        .then(res => res.text())
        .then(text => console.log(text));
 }
