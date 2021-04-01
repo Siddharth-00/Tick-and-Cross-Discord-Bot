@@ -1,10 +1,10 @@
 const Discord = require("discord.js");
-var Spotify = require('spotify-web-api-js');
+var SpotifyWebApi = require('spotify-web-api-node');
 const client = new Discord.Client();
 require("dotenv").config();
 
 const random = require("random");
-var s = new Spotify();
+var s = new SpotifyWebApi();
 
 //JSON Loads discord bot key
 //JSON has 1 value in it. "key" : "yourkey"
