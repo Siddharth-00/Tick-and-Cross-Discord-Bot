@@ -591,7 +591,7 @@ function searchMusic(search, message) {
             )
             .setDescription(message.content.substring(13));
           embed.addField(data.track_name, data.artist_name);
-          msg.channel.send(embed);
+          message.channel.send(embed);
         });
 }
 
