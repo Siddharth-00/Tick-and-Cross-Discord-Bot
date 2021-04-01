@@ -327,7 +327,7 @@ client.on("message", (msg) => {
     msg.channel.send("<@&804494324204568607>");
   }
   if (msg.content.startsWith("!searchLyric ")) {
-    searchMusic(msg.content.substring(13));
+    msg.channel.send(searchMusic(msg.content.substring(13), msg));
   }
   /*let msgTimestamp = [];
     if (msg.content == "!order66") {
@@ -578,10 +578,23 @@ function writePost(reaction, count) {
   return postID;
 }
 
-function searchMusic(search) {
+function searchMusic(search, message) {
   fetch(`http://api.musixmatch.com/ws/1.1/track.search?apikey=${musictoken}&q_lyrics=${search}&page_size=1&page=1&s_track_rating=desc`)
        .then(res => res.json())
-       .then(json => console.log(json.message.body.track_list[0]));
+       .then(json => {
+          var data = json.message.body.track_list[0].track
+          const embed = new Discord.RichEmbed()
+            .setColor('#288243')
+            .setAuthor(
+              message.member.user.username,
+              message.author.avatarURL
+            )
+            .setDescription(message.content.substring(13))
+            .addFields(
+            { name: data.track_name, value: data.artist_name}
+            )
+          return embed;
+        });
 }
 
 
