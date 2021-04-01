@@ -580,8 +580,8 @@ function writePost(reaction, count) {
 
 function searchMusic(search) {
   fetch(`http://api.musixmatch.com/ws/1.1/track.search?apikey=${musictoken}&q_lyrics=${search}&page_size=1&page=1&s_track_rating=desc`)
-       .then(res => res.text())
-       .then(text => console.log(text));
+       .then(res => res.json())
+       .then(json => console.log(json.message.body));
 }
 
 
