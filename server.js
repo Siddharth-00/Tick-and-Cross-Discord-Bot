@@ -599,7 +599,7 @@ function searchMusic(search, message) {
 }
 
 function searchLyric(search, message) {
-  fetch(`http://api.musixmatch.com/ws/1.1/track.search?apikey=${musictoken}&q_lyrics=${search}&s_track_rating=desc`)
+  fetch(`http://api.musixmatch.com/ws/1.1/track.search?apikey=${musictoken}&f_has_lyrics=${search}&s_track_rating=desc`)
        .then(res => res.json())
        .then(json => {
           var data = json.message.body.track_list[0].track;
