@@ -1,10 +1,10 @@
 const Discord = require("discord.js");
-var SpotifyWebApi = require('spotify-web-api-node');
 const client = new Discord.Client();
 require("dotenv").config();
 
+
 const random = require("random");
-var s = new SpotifyWebApi();
+const fetch = require('node-fetch');
 
 //JSON Loads discord bot key
 //JSON has 1 value in it. "key" : "yourkey"
@@ -325,8 +325,8 @@ client.on("message", (msg) => {
   if (msg.content == "!nonce" && msg.member.hasPermission("KICK_MEMBERS")) {
     msg.channel.send("<@&804494324204568607>");
   }
-  if (msg.content.startsWith("!searchSpotify ")) {
-    searchSpotify(msg.content.substring(15));
+  if (msg.content.startsWith("!searchLyric ")) {
+    searchMusic(msg.content.substring(13));
   }
   /*let msgTimestamp = [];
     if (msg.content == "!order66") {
@@ -577,27 +577,11 @@ function writePost(reaction, count) {
   return postID;
 }
 
-var prev = null;
-
-function searchSpotify(queryTerm) {
-  // abort previous request, if any
-  if (prev !== null) {
-    prev.abort();
-  }
-
-  // store the current promise in case we need to abort it
-  prev = s.searchTracks(queryTerm, { limit: 5 });
-  prev.then(
-    function (data) {
-      // clean the promise so it doesn't call abort
-      prev = null;
-      // ...render list of search results...
-      console.log(data);
-    },
-    function (err) {
-      console.error(err);
-    }
-  );
+function searchMusic(search) {
+  fetch('http://api.musixmatch.com/ws/1.1/track.search?apikey=c523da3df5ff27726fe4c5d79b99bca3&q_artist=justin%20bieber&page_size=3&page=1&s_track_rating=desc')
+       .then(res => res.text())
+       .then(text => console.log(text));
 }
+
 
 client.login(token);
