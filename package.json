@@ -15,7 +15,8 @@
     "express": "^4.17.1",
     "pg": "^8.3.3",
     "pg-promise": "^10.6.1",
-    "random": "^2.2.0"
+    "random": "^2.2.0",
+    "spotify-web-api-js": "^1.5.1"
   },
   "engines": {
     "node": "12.x"
