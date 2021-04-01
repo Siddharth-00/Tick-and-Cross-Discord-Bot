@@ -326,7 +326,7 @@ client.on("message", (msg) => {
   if (msg.content == "!nonce" && msg.member.hasPermission("KICK_MEMBERS")) {
     msg.channel.send("<@&804494324204568607>");
   }
-  if (msg.content.startsWith("!searchLyric ")) {
+  if (msg.content.startsWith("!searchMusic ")) {
     searchMusic(msg.content.substring(13), msg);
   }
   /*let msgTimestamp = [];
