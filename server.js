@@ -327,7 +327,7 @@ client.on("message", (msg) => {
     msg.channel.send("<@&804494324204568607>");
   }
   if (msg.content.startsWith("!searchLyric ")) {
-    msg.channel.send(searchMusic(msg.content.substring(13), msg));
+    searchMusic(msg.content.substring(13), msg);
   }
   /*let msgTimestamp = [];
     if (msg.content == "!order66") {
@@ -583,7 +583,6 @@ function searchMusic(search, message) {
        .then(res => res.json())
        .then(json => {
           var data = json.message.body.track_list[0].track;
-          console.log(data);
           const embed = new Discord.RichEmbed()
             .setColor('#288243')
             .setAuthor(
@@ -592,8 +591,7 @@ function searchMusic(search, message) {
             )
             .setDescription(message.content.substring(13));
           embed.addField(data.track_name, data.artist_name);
-          console.log(embed);
-          return embed;
+          msg.channel.send(embed);
         });
 }
 
