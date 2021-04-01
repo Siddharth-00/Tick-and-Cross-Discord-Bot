@@ -579,7 +579,7 @@ function writePost(reaction, count) {
 }
 
 function searchMusic(search, message) {
-  fetch(`http://api.musixmatch.com/ws/1.1/track.search?apikey=${musictoken}&q_lyrics=${search}&page_size=1&page=1&s_track_rating=desc`)
+  fetch(`http://api.musixmatch.com/ws/1.1/track.search?apikey=${musictoken}&q=${search}&page_size=1&page=1&s_track_rating=desc`)
        .then(res => res.json())
        .then(json => {
           var data = json.message.body.track_list[0].track;
@@ -594,6 +594,8 @@ function searchMusic(search, message) {
           message.channel.send(embed);
         });
 }
+
+
 
 
 client.login(token);
