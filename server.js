@@ -1,8 +1,10 @@
 const Discord = require("discord.js");
+var Spotify = require('resources/spotify-web-api-js');
 const client = new Discord.Client();
 require("dotenv").config();
 
 const random = require("random");
+var s = new Spotify();
 
 //JSON Loads discord bot key
 //JSON has 1 value in it. "key" : "yourkey"
@@ -570,6 +572,29 @@ function writePost(reaction, count) {
     }
   });
   return postID;
+}
+
+var prev = null;
+
+function searchSpotify(queryTerm) {
+  // abort previous request, if any
+  if (prev !== null) {
+    prev.abort();
+  }
+
+  // store the current promise in case we need to abort it
+  prev = s.searchTracks(queryTerm, { limit: 5 });
+  prev.then(
+    function (data) {
+      // clean the promise so it doesn't call abort
+      prev = null;
+      // ...render list of search results...
+      console.log(data);
+    },
+    function (err) {
+      console.error(err);
+    }
+  );
 }
 
 client.login(token);
