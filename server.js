@@ -589,8 +589,8 @@ function searchMusic(search, message) {
               message.member.user.username,
               message.author.avatarURL
             )
-            .setDescription(message.content.substring(13));
-          embed.addField(data.track_name, data.artist_name);
+            .setDescription(`Search: ${message.content.substring(13)}`);
+          embed.addField(`Name: ${data.track_name}`, `Artist: ${data.artist_name}`);
           message.channel.send(embed);
         });
 }
