@@ -589,10 +589,8 @@ function searchMusic(search, message) {
               message.member.user.username,
               message.author.avatarURL
             )
-            .setDescription(message.content.substring(13))
-            .addFields(
-            { name: data.track_name, value: data.artist_name}
-            )
+            .setDescription(message.content.substring(13));
+          embed.addField(data.track_name, data.artist_name);
           return embed;
         });
 }
