@@ -298,7 +298,9 @@ client.on("message", (msg) => {
     msg.channel.send("Yes.");
   }
   if (msg.content == "!imperial") {
-    msg.channel.send("Have fun socialising! Oh wait...");
+    msg.channel.send(
+      "A university for middle class asians who aren't cool enough for other unis"
+    );
   }
   if (msg.content == "!ucl") {
     msg.channel.send("Good luck with that student satisfaction");
@@ -343,13 +345,19 @@ client.on("message", (msg) => {
       "https://tenor.com/view/cold-cold-outside-freezing-spongebob-spongebob-squarepants-gif-13025135"
     );
   }
-  // if (msg.content.startsWith("!searchMusic ")) {
-  //   searchMusic(msg.content.substring(13), msg);
-  // }
-  // if (msg.content.startsWith("!searchLyric ")) {
-  //   searchLyric(msg.content.substring(13), msg);
-  // }
-  /*let msgTimestamp = [];
+
+  if (
+    msg.content.length > 5 &&
+    msg.content.substring(0, 5).toLowerCase() == "pick " &&
+    msg.author.bot != true
+  ) {
+    // if (msg.content.startsWith("!searchMusic ")) {
+    //   searchMusic(msg.content.substring(13), msg);
+    // }
+    // if (msg.content.startsWith("!searchLyric ")) {
+    //   searchLyric(msg.content.substring(13), msg);
+    // }
+    /*let msgTimestamp = [];
     if (msg.content == "!order66") {
       if (typeof msgTimestamp[0] !== "undefined") {
         if (msgTimestamp[0] + 10000 < Date.now()) {
@@ -367,11 +375,6 @@ client.on("message", (msg) => {
         );
       }
     }*/
-  if (
-    msg.content.length > 5 &&
-    msg.content.substring(0, 5).toLowerCase() == "pick " &&
-    msg.author.bot != true
-  ) {
     if (
       msg.content.includes("@everyone") ||
       msg.content.includes("@here") ||
