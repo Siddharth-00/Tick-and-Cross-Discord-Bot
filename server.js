@@ -338,6 +338,11 @@ client.on("message", (msg) => {
   if (msg.content == "!jappy") {
     msg.channel.send("any new tings? :disguised_face:");
   }
+  if (msg.content == "!edinburgh") {
+    msg.channel.send(
+      "https://tenor.com/view/cold-cold-outside-freezing-spongebob-spongebob-squarepants-gif-13025135"
+    );
+  }
   // if (msg.content.startsWith("!searchMusic ")) {
   //   searchMusic(msg.content.substring(13), msg);
   // }
