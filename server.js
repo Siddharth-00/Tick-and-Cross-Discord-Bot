@@ -2,14 +2,13 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 require("dotenv").config();
 
-
 const random = require("random");
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
 
 //JSON Loads discord bot key
 //JSON has 1 value in it. "key" : "yourkey"
 let token = process.env.TOKEN;
-let musictoken = process.env.MUSIC
+let musictoken = process.env.MUSIC;
 
 //Opens up database
 
@@ -243,8 +242,16 @@ client.on("message", (msg) => {
   if (msg.channel.type === "dm") return; // Ignore DM channels.
   if (
     msg.author.id === "385840144273506307" &&
-    (msg.content.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes("rhino") ||
-        msg.content.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes("rh1no") || 
+    (msg.content
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .includes("rhino") ||
+      msg.content
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .includes("rh1no") ||
       msg.content.includes("coochie") ||
       msg.content.includes("ewwww-lol.gif") ||
       msg.content.includes("ace-ventura"))
@@ -270,7 +277,9 @@ client.on("message", (msg) => {
   if (
     msg.content.toLowerCase() == "hello there" ||
     msg.content.toLowerCase() == "hello there!" ||
-    (msg.content.includes("hello") && msg.content.includes("there") && msg.content.includes(".gif"))
+    (msg.content.includes("hello") &&
+      msg.content.includes("there") &&
+      msg.content.includes(".gif"))
   ) {
     msg.channel.send(
       "https://media1.tenor.com/images/e60c1321d5acb1ff986d2dbb1560343e/tenor.gif?itemid=13024141"
@@ -296,7 +305,7 @@ client.on("message", (msg) => {
   }
   if (msg.content == "!warwick") {
     msg.channel.send(
-      "I can't diss WW without risking the wrath of half the server"
+      'Interviewer: "Why did you choose Warwick? \n Interviewee: "Because Oxbridge didn\'t choose me! *sob*"'
     );
   }
   if (msg.content == "!oxford") {
@@ -582,40 +591,35 @@ function writePost(reaction, count) {
 }
 
 function searchMusic(search, message) {
-  fetch(`http://api.musixmatch.com/ws/1.1/track.search?apikey=${musictoken}&q=${search}&s_track_rating=desc`)
-       .then(res => res.json())
-       .then(json => {
-          var data = json.message.body.track_list[0].track;
-          const embed = new Discord.RichEmbed()
-            .setColor('#288243')
-            .setAuthor(
-              message.member.user.username,
-              message.author.avatarURL
-            )
-            .setDescription(`Search: ${message.content.substring(13)}`);
-          embed.addField(`Name: ${data.track_name}`, `Artist: ${data.artist_name}`);
-          message.channel.send(embed);
-        });
+  fetch(
+    `http://api.musixmatch.com/ws/1.1/track.search?apikey=${musictoken}&q=${search}&s_track_rating=desc`
+  )
+    .then((res) => res.json())
+    .then((json) => {
+      var data = json.message.body.track_list[0].track;
+      const embed = new Discord.RichEmbed()
+        .setColor("#288243")
+        .setAuthor(message.member.user.username, message.author.avatarURL)
+        .setDescription(`Search: ${message.content.substring(13)}`);
+      embed.addField(`Name: ${data.track_name}`, `Artist: ${data.artist_name}`);
+      message.channel.send(embed);
+    });
 }
 
 function searchLyric(search, message) {
-  fetch(`http://api.musixmatch.com/ws/1.1/track.search?apikey=${musictoken}&q_lyrics=${search}&s_track_rating=desc`)
-       .then(res => res.json())
-       .then(json => {
-          var data = json.message.body.track_list[0].track;
-          const embed = new Discord.RichEmbed()
-            .setColor('#288243')
-            .setAuthor(
-              message.member.user.username,
-              message.author.avatarURL
-            )
-            .setDescription(`Search: ${message.content.substring(13)}`);
-          embed.addField(`Name: ${data.track_name}`, `Artist: ${data.artist_name}`);
-          message.channel.send(embed);
-        });
+  fetch(
+    `http://api.musixmatch.com/ws/1.1/track.search?apikey=${musictoken}&q_lyrics=${search}&s_track_rating=desc`
+  )
+    .then((res) => res.json())
+    .then((json) => {
+      var data = json.message.body.track_list[0].track;
+      const embed = new Discord.RichEmbed()
+        .setColor("#288243")
+        .setAuthor(message.member.user.username, message.author.avatarURL)
+        .setDescription(`Search: ${message.content.substring(13)}`);
+      embed.addField(`Name: ${data.track_name}`, `Artist: ${data.artist_name}`);
+      message.channel.send(embed);
+    });
 }
-
-
-
 
 client.login(token);
