@@ -305,7 +305,7 @@ client.on("message", (msg) => {
   }
   if (msg.content == "!warwick") {
     msg.channel.send(
-      'Interviewer: "Why did you choose Warwick? \n Interviewee: "Because Oxbridge didn\'t choose me! *sob*"'
+      'Interviewer: "Why did you choose Warwick?\nInterviewee: "Because Oxbridge didn\'t choose me! *sob*"'
     );
   }
   if (msg.content == "!oxford") {
