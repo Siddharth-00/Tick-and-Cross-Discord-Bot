@@ -345,7 +345,11 @@ client.on("message", (msg) => {
       "https://tenor.com/view/cold-cold-outside-freezing-spongebob-spongebob-squarepants-gif-13025135"
     );
   }
-
+  if (msg.content == "!bacon") {
+    msg.channel.send(
+      "https://tenor.com/view/pepe-nuke-apocalypse-meme-gif-9579985"
+    );
+  }
   if (
     msg.content.length > 5 &&
     msg.content.substring(0, 5).toLowerCase() == "pick " &&
