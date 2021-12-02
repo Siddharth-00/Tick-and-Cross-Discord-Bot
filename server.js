@@ -388,6 +388,15 @@ client.on("message", (msg) => {
     } else if (msg.mentions.members.first()) {
       msg.channel.send("Double pings are just rude");
     } else {
+      if (
+        msg.content.substring(5).includes("..") &&
+        !isNaN(msg.content.substring(5).includes("..").split("..")[0]) &&
+        !isNaN(msg.content.substring(5).includes("..").split("..")[1])
+      ) {
+        var nums = msg.content.substring(5).includes("..").split("..");
+        var out = random.int(parseInt(nums[0]), parseInt(nums[1]));
+        msg.channel.send(out.toString());
+      }
       var words = msg.content.substring(5).split(",");
       var index = random.int(0, words.length - 1);
       msg.channel.send(words[index]);
