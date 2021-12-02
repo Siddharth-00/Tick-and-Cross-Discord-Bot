@@ -390,10 +390,10 @@ client.on("message", (msg) => {
     } else {
       if (
         msg.content.substring(5).includes("..") &&
-        !isNaN(msg.content.substring(5).includes("..").split("..")[0]) &&
-        !isNaN(msg.content.substring(5).includes("..").split("..")[1])
+        !isNaN(msg.content.substring(5).split("..")[0]) &&
+        !isNaN(msg.content.substring(5).split("..")[1])
       ) {
-        var nums = msg.content.substring(5).includes("..").split("..");
+        var nums = msg.content.substring(5).split("..");
         var out = random.int(parseInt(nums[0]), parseInt(nums[1]));
         msg.channel.send(out.toString());
       } else {
