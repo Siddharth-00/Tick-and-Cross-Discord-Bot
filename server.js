@@ -394,7 +394,10 @@ client.on("message", (msg) => {
         !isNaN(msg.content.substring(5).split("..")[1])
       ) {
         var nums = msg.content.substring(5).split("..");
-        var out = random.int(parseInt(nums[0]), parseInt(nums[1]));
+        var a = parseInt(nums[0]);
+        var b = parseInt(nums[1]);
+        if a < 10000000000 && a > -10000000000 && b < 10000000000 && b > -10000000000
+        var out = random.int(a, b);
         msg.channel.send(out.toString());
       } else {
         var words = msg.content.substring(5).split(",");
