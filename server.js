@@ -396,9 +396,15 @@ client.on("message", (msg) => {
         var nums = msg.content.substring(5).split("..");
         var a = parseInt(nums[0]);
         var b = parseInt(nums[1]);
-        if a < 10000000000 && a > -10000000000 && b < 10000000000 && b > -10000000000
-        var out = random.int(a, b);
-        msg.channel.send(out.toString());
+        if (
+          a < 10000000000 &&
+          a > -10000000000 &&
+          b < 10000000000 &&
+          b > -10000000000
+        ) {
+          var out = random.int(a, b);
+          msg.channel.send(out.toString());
+        }
       } else {
         var words = msg.content.substring(5).split(",");
         var index = random.int(0, words.length - 1);
