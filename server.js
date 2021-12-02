@@ -396,10 +396,11 @@ client.on("message", (msg) => {
         var nums = msg.content.substring(5).includes("..").split("..");
         var out = random.int(parseInt(nums[0]), parseInt(nums[1]));
         msg.channel.send(out.toString());
+      } else {
+        var words = msg.content.substring(5).split(",");
+        var index = random.int(0, words.length - 1);
+        msg.channel.send(words[index]);
       }
-      var words = msg.content.substring(5).split(",");
-      var index = random.int(0, words.length - 1);
-      msg.channel.send(words[index]);
     }
   }
   if (msg.content == "!carl") {
